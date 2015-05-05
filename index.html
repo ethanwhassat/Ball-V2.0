@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Ball-v2.0 by ethanwhassat</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Ball-v2.0</h1>
+        <h2>ELEC 327 Mid_term project reimplementation</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/ethanwhassat/Ball-V2.0/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/ethanwhassat/Ball-V2.0/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/ethanwhassat/Ball-V2.0" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="ball-v20" class="anchor" href="#ball-v20" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ball-V2.0</h1>
+
+<p>ELEC 327 Midterm Project - Smart Height Measuring Device</p>
+
+<h4>
+<a id="group-members-ethan-yuqiang-heng-thomas-tingkai-liu-bill-yiqiu-wang" class="anchor" href="#group-members-ethan-yuqiang-heng-thomas-tingkai-liu-bill-yiqiu-wang" aria-hidden="true"><span class="octicon octicon-link"></span></a>Group Members: Ethan Yuqiang Heng, Thomas Tingkai Liu, Bill Yiqiu Wang</h4>
+
+<h2>
+<a id="central-concepts" class="anchor" href="#central-concepts" aria-hidden="true"><span class="octicon octicon-link"></span></a>Central Concepts</h2>
+
+<blockquote>
+<p>•MOTION !</p>
+
+<p>•Distance=0.5<em>g</em>time^2(g=981cms^-2)</p>
+
+<p>•The device generally have inelastic collision with the ceiling, hence we neglect the initial acceleration (beyond g) when the device starts to free fall</p>
+</blockquote>
+
+<h2>
+<a id="functionality" class="anchor" href="#functionality" aria-hidden="true"><span class="octicon octicon-link"></span></a>Functionality</h2>
+
+<blockquote>
+<p>In a room, user can repetitively throw this device to hit the ceiling and let the device free fall to the floor, and the device will calculate the distance of free fall and take the average.</p>
+</blockquote>
+
+<h2>
+<a id="push-button-inputs" class="anchor" href="#push-button-inputs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Push Button Inputs</h2>
+
+<blockquote>
+<ol>
+<li><p>Press button for 0.4 seconds or longer but shorter than 1.5 seconds – the device will calculate the current distance measured and average into the previous measurements. Then it immediately gives the output.</p></li>
+<li><p>Press button for 1.5 seconds or longer – the device will discard the current measurement and get ready for the next measurement.</p></li>
+<li><p>Press button twice quickly – the device will reset itself and get ready for a new set of measurements.</p></li>
+</ol>
+</blockquote>
+
+<h2>
+<a id="led-outputs" class="anchor" href="#led-outputs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Led Outputs</h2>
+
+<ol>
+<li>The device gives output in decimal number with unit cm:</li>
+</ol>
+
+<blockquote>
+<p>a. Red LED: 100 * number of blinks</p>
+
+<p>b. Green LED: 10 * number of blinks</p>
+
+<p>c. Purple LED: 1 * number of blinks</p>
+
+<p>Eg. 3 Red blinks + 2 Green blinks * 1 Purple blink = 3<em>100 + 2</em>10 +1 = 321cm</p>
+</blockquote>
+
+<ol>
+<li><p>Discard – Red Red short blink</p></li>
+<li><p>Reset – Red Green Blue short blink</p></li>
+</ol>
+
+<h2>
+<a id="pcb-design" class="anchor" href="#pcb-design" aria-hidden="true"><span class="octicon octicon-link"></span></a>PCB Design</h2>
+
+<p><img src="https://github.com/ethanwhassat/Ball-V2.0/blob/master/pcb.png?raw=true" alt="PCB"></p>
+
+<p>• Compact design</p>
+
+<blockquote>
+<p>We would not want a huge PCB, which is clumsy and also unsafe when tossed with higher distance.</p>
+</blockquote>
+
+<p>• Fall proof</p>
+
+<blockquote>
+<p>A larger PCB is also more prone to damage given because it has higher inertia. Use of simple components also gives a higher reliability.</p>
+</blockquote>
+
+<h2>
+<a id="software-design" class="anchor" href="#software-design" aria-hidden="true"><span class="octicon octicon-link"></span></a>Software Design</h2>
+
+<p>The code focuses on the following things:</p>
+
+<blockquote>
+<p>• Extending the functionality and control based on a hardware design with few components. We could not use an LCD display because tossing would easily damage it, hence we used SPI LED and used three different colors to represent the 100, 10 and 1 digits of a number. This is accurate and interesting. We also extended the functionality of the button by setting different patterns of pressing, instead of multiple buttons.</p>
+
+<p>• Increasing accuracy given the unpredictability of tossing. Multiple tosses can have slight variations, taking average increases accuracy to great extends. Sometimes a toss can be bad, and it would be time-consuming to start over the entire measurement, hence user are allowed to discard a toss and continue the measurement.</p>
+
+<p>• Low power. The entire design utilized multiple timers to achieve low power. The CPU would be off during most of the time, and most of the jobs are done in interrupts.</p>
+</blockquote>
+
+<h2>
+<a id="code-structure" class="anchor" href="#code-structure" aria-hidden="true"><span class="octicon octicon-link"></span></a>Code Structure</h2>
+
+<p>• Settings</p>
+
+<blockquote>
+<p>o WDT settings</p>
+
+<p>o Timer settings</p>
+
+<p>o SPI settings</p>
+
+<p>o Port 2 Settings</p>
+
+<p>o Enter Low Power Mode and Enable Interrupts</p>
+</blockquote>
+
+<p>• Port 2 Interrupts</p>
+
+<blockquote>
+<p>o Vibration Sensor</p>
+
+<p>o Timer1</p>
+
+<p>o Timer2 o Push Button</p>
+
+<p>o Average o Discard o Reset</p>
+</blockquote>
+
+<h4>
+<a id="-wdt-interrupts" class="anchor" href="#-wdt-interrupts" aria-hidden="true"><span class="octicon octicon-link"></span></a>• WDT Interrupts</h4>
+
+<blockquote>
+<p>o Increment timers</p>
+</blockquote>
+
+<h2>
+<a id="challenges" class="anchor" href="#challenges" aria-hidden="true"><span class="octicon octicon-link"></span></a>Challenges</h2>
+
+<ol>
+<li>A normal toss of the device might trigger the vibration switch 2-5 times, it’s important for the software to recognize the correct time interval. There are roughly four cases of different triggering situations:</li>
+</ol>
+
+<blockquote>
+<p>a. Case 1: Triggered when hit ceiling, hit floor.</p>
+
+<p>b. Case 2: Triggered when tossed, hit ceiling, hit floor.</p>
+
+<p>c. Case 3: Triggered when tossed, hit ceiling, hit floor, bounced on floor for 1 or 2 times.</p>
+
+<p>d. Case 4: Triggered when hit ceiling, hit floor, bounced on floor for 1 or 2 times.</p>
+
+<p>Based on the complicated situations, one thing we can first make sure is that in one round of measurement, any vibration switch trigger after the third one is redundant. In the first two time intervals in between three triggers, the correct time interval between ceiling and floor triggering must be the longer one. This is because it takes shorter to arrive at the ceiling due to initial acceleration and shorter distance; and the bounce most likely has a much shorter distance. Based on these facts, it helps to distinguish the correct interval.</p>
+</blockquote>
+
+<ol>
+<li>Vibration Switch debouncing. The general idea of the debouncing of this sensor is similar to the push button, but from later observations: the vibration switch “vibrates” for a long time after it is impacted, because the connection of the sensor and the PCB acts like a pivot for the sensor to vibrate around. We solved this problem in both hardware and software.</li>
+</ol>
+
+<blockquote>
+<p>a. Hardware: We inserted the sensor further into the PCB to reduce unwanted vibrations.
+<img src="https://github.com/ethanwhassat/Ball-V2.0/blob/master/illr.png?raw=true" alt="illr"></p>
+
+<p>b. Software: an additional debouncing time is added to the vibration sensor.</p>
+</blockquote>
+
+<ol>
+<li>Time measurement calibration. We realize that the WDT is not very accurate when measuring time interval, which is essential in our measurement. Therefore, we took a long time calibrating the WDT by tracking our counter in the debug of CCS using stopwatch. In the end, we created a time calibration variable timeCalibration to adjust the accuracy in different circumstances.</li>
+</ol>
+
+<h2>
+<a id="further-improvements" class="anchor" href="#further-improvements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Further Improvements</h2>
+
+<blockquote>
+<ol>
+<li><p>Though we have a focus on low power, we still used some __delay_cycles() function mainly in LED display interval and vibration switch debouncing. This can be improved by using WDT timer for LED display intervals and moving vibration switch to ports other than port2, and use another timer to do the debouncing, which we could not do now because vibration switch requires a different debouncing scheme to that of the button, which we did not think of when making our first PCB.</p></li>
+<li><p>Despite the fact that the current device gives pretty accurate measurements, it would be better to use accelerometers to measure initial accelerations and integrate over time to measure the most accurate distance. But given the limited calculation capability of the MSP430 and few choices of sensors, we eventually decided on a simpler but much more reliable, low-power and compact design like this.</p></li>
+</ol>
+</blockquote>
+
+<h2>
+<a id="results--demo" class="anchor" href="#results--demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Results &amp; Demo</h2>
+
+<h4>
+<a id="demo1" class="anchor" href="#demo1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo1</h4>
+
+<p><a href="https://www.youtube.com/watch?v=v2mgXxUTHiQ">Functionality Demo</a></p>
+
+<h4>
+<a id="demo2" class="anchor" href="#demo2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo2</h4>
+
+<p><a href="https://www.youtube.com/watch?v=Y2OUF5_TQY8&amp;feature=youtu.be">Actual Demo</a></p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
